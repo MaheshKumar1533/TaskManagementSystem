@@ -12,9 +12,9 @@ def task_to_dict(task):
         'description': task.description,
         'status': task.status,
         'priority': task.priority,
-        'due_date': task.due_date.isoformat() if task.due_date else None,
-        'created_at': task.created_at.isoformat(),
-        'updated_at': task.updated_at.isoformat(),
+        'due_date': task.due_date.isoformat() if hasattr(task.due_date, 'isoformat') else task.due_date,
+        'created_at': task.created_at.isoformat() if hasattr(task.created_at, 'isoformat') else task.created_at,
+        'updated_at': task.updated_at.isoformat() if hasattr(task.updated_at, 'isoformat') else task.updated_at,
     }
 
 @csrf_exempt

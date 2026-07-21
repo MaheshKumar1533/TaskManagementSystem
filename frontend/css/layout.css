@@ -182,3 +182,7 @@ body {
     margin-top: 0.25rem;
     letter-spacing: -0.5px;
 }
+
+.hidden {
+    display: none !important;
+}
