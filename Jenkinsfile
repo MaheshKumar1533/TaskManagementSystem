@@ -2,14 +2,7 @@ pipeline {
     agent any
 
     environment {
-        AWS_ACCOUNT_ID    = '123456789012' // Replace with your actual AWS Account ID
-        AWS_REGION        = 'us-east-1'
-        AWS_CREDENTIALS_ID= 'aws-credentials' // Jenkins AWS credentials ID
-        
-        ECR_BACKEND_REPO  = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/tasksphere-backend"
-        ECR_FRONTEND_REPO = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/tasksphere-frontend"
-        
-        ECS_CLUSTER       = 'tasksphere-cluster'
+        AWS_CREDENTIALS_ID = 'aws-credentials' // Jenkins AWS credentials ID
     }
 
     stages {
@@ -43,29 +36,23 @@ pipeline {
             }
         }
 
-        stage('Terraform Provision') {
-            steps {
-                echo 'Provisioning AWS infrastructure (VPC, RDS DB, ECS Cluster, Load Balancers)...'
-                withCredentials([[
-                    $class: 'AmazonWebServicesCredentialsBinding', 
-                    credentialsId: "${AWS_CREDENTIALS_ID}"
-                ]]) {
-                    sh '''
-                        cd terraform
-                        terraform init
-                        terraform apply -auto-approve \
-                            -var="aws_region=${AWS_REGION}"
-                    '''
-                }
-            }
-        }
-
         stage('Docker Build') {
             steps {
                 echo 'Building Docker Images...'
                 sh '''
-                    docker build -t $ECR_BACKEND_REPO:${BUILD_NUMBER} -t $ECR_BACKEND_REPO:latest ./backend
-                    docker build -t $ECR_FRONTEND_REPO:${BUILD_NUMBER} -t $ECR_FRONTEND_REPO:latest ./frontend
+                    # Load AWS details from central .env file
+                    if [ -f .env ]; then
+                        export $(grep -v '^#' .env | xargs)
+                    fi
+                    
+                    BACKEND_REPO="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/tasksphere-backend"
+                    FRONTEND_REPO="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/tasksphere-frontend"
+                    
+                    echo "Building Backend image for $BACKEND_REPO..."
+                    docker build -t $BACKEND_REPO:${BUILD_NUMBER} -t $BACKEND_REPO:latest ./backend
+                    
+                    echo "Building Frontend image for $FRONTEND_REPO..."
+                    docker build -t $FRONTEND_REPO:${BUILD_NUMBER} -t $FRONTEND_REPO:latest ./frontend
                 '''
             }
         }
@@ -78,13 +65,21 @@ pipeline {
                     credentialsId: "${AWS_CREDENTIALS_ID}"
                 ]]) {
                     sh '''
+                        # Load AWS details from central .env file
+                        if [ -f .env ]; then
+                            export $(grep -v '^#' .env | xargs)
+                        fi
+                        
+                        BACKEND_REPO="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/tasksphere-backend"
+                        FRONTEND_REPO="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/tasksphere-frontend"
+                        
                         aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
                         
-                        docker push $ECR_BACKEND_REPO:${BUILD_NUMBER}
-                        docker push $ECR_BACKEND_REPO:latest
+                        docker push $BACKEND_REPO:${BUILD_NUMBER}
+                        docker push $BACKEND_REPO:latest
                         
-                        docker push $ECR_FRONTEND_REPO:${BUILD_NUMBER}
-                        docker push $ECR_FRONTEND_REPO:latest
+                        docker push $FRONTEND_REPO:${BUILD_NUMBER}
+                        docker push $FRONTEND_REPO:latest
                     '''
                 }
             }
@@ -109,10 +104,10 @@ pipeline {
             cleanWs()
         }
         success {
-            echo 'Infrastructure provisioning and code deployment completed successfully!'
+            echo 'TaskSphere image compilation and AWS deploy triggered successfully!'
         }
         failure {
-            echo 'Pipeline failed. Please inspect build output.'
+            echo 'Pipeline failed. Please check build logs.'
         }
     }
 }

@@ -24,7 +24,7 @@
         "logDriver": "awslogs",
         "options": {
           "awslogs-group": "/ecs/tasksphere",
-          "awslogs-region": "us-east-1",
+          "awslogs-region": "AWS_REGION_PLACEHOLDER",
           "awslogs-stream-prefix": "frontend"
         }
       }

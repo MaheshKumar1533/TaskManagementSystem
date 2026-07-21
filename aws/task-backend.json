@@ -27,30 +27,34 @@
         },
         {
           "name": "DB_PORT",
-          "value": "5432"
+          "value": "DB_PORT_PLACEHOLDER"
         },
         {
           "name": "DB_NAME",
-          "value": "tasksphere"
+          "value": "DB_NAME_PLACEHOLDER"
         },
         {
           "name": "DB_USER",
-          "value": "postgres"
+          "value": "DB_USER_PLACEHOLDER"
         },
         {
           "name": "DB_PASSWORD",
-          "value": "ProductionDbSecurePassword!"
+          "value": "DB_PASSWORD_PLACEHOLDER"
         },
         {
           "name": "DEBUG",
           "value": "False"
+        },
+        {
+          "name": "SECRET_KEY",
+          "value": "SECRET_KEY_PLACEHOLDER"
         }
       ],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
           "awslogs-group": "/ecs/tasksphere",
-          "awslogs-region": "us-east-1",
+          "awslogs-region": "AWS_REGION_PLACEHOLDER",
           "awslogs-stream-prefix": "backend"
         }
       }
