@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: tasksphere_db
+    restart: always
+    environment:
+      POSTGRES_DB: tasksphere
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d tasksphere"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - tasksphere_net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tasksphere_backend
+    restart: always
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=tasksphere
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DEBUG=True
+      - SECRET_KEY=django-insecure-&n(&we$ytclpbz3pg&*wgqcnen24nko=7jc8)#7@^ijasyzm63
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - tasksphere_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: tasksphere_frontend
+    restart: always
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - tasksphere_net
+
+volumes:
+  postgres_data:
+
+networks:
+  tasksphere_net:
+    driver: bridge
