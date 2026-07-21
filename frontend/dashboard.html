@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskSphere - Workspace Analytics</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Modular Style -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-cubes-stacked"></i>
+                </div>
+                <h2>TaskSphere</h2>
+            </div>
+            <nav class="nav-menu">
+                <a href="dashboard.html" class="nav-item active">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="board.html" class="nav-item">
+                    <i class="fa-solid fa-table-columns"></i>
+                    <span>Task Board</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <span class="status-pill connected">
+                    <span class="dot"></span> Connected
+                </span>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <span class="date-badge" id="current-date">July 21, 2026</span>
+                    <h1>Workspace Analytics</h1>
+                </div>
+                <div class="header-right">
+                    <a href="board.html" class="btn btn-primary">
+                        <i class="fa-solid fa-list-check"></i> Go To Board
+                    </a>
+                </div>
+            </header>
+
+            <!-- Dashboard Analytics View -->
+            <section class="view-section" id="dashboard-view">
+                <!-- Stat Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon icon-total">
+                            <i class="fa-solid fa-list-check"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h3 id="stat-total">0</h3>
+                            <p>Total Tasks</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon icon-todo">
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h3 id="stat-todo">0</h3>
+                            <p>To Do</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon icon-progress">
+                            <i class="fa-solid fa-spinner fa-spin-hover"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h3 id="stat-progress">0</h3>
+                            <p>In Progress</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon icon-done">
+                            <i class="fa-regular fa-circle-check"></i>
+                        </div>
+                        <div class="stat-details">
+                            <h3 id="stat-done">0</h3>
+                            <p>Completed</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visual Breakdown -->
+                <div class="breakdown-grid">
+                    <!-- Progress Card -->
+                    <div class="breakdown-card progress-breakdown">
+                        <h3>Workspace Completion</h3>
+                        <div class="progress-container">
+                            <div class="circular-progress-wrapper">
+                                <svg class="circular-progress" viewBox="0 0 100 100">
+                                    <circle class="bg" cx="50" cy="50" r="40"></circle>
+                                    <circle class="bar" id="circle-progress-bar" cx="50" cy="50" r="40"></circle>
+                                </svg>
+                                <div class="progress-value" id="progress-percent">0%</div>
+                            </div>
+                        </div>
+                        <p class="progress-sub">Keep going! You're making steady progress.</p>
+                    </div>
+
+                    <!-- Priority Card -->
+                    <div class="breakdown-card priority-breakdown">
+                        <h3>Priority Distribution</h3>
+                        <div class="priority-list">
+                            <div class="priority-item">
+                                <div class="priority-header">
+                                    <span class="priority-label high"><i class="fa-solid fa-circle"></i> High</span>
+                                    <span class="priority-count" id="count-high">0</span>
+                                </div>
+                                <div class="progress-line"><div class="fill high" id="bar-high" style="width: 0%"></div></div>
+                            </div>
+                            <div class="priority-item">
+                                <div class="priority-header">
+                                    <span class="priority-label medium"><i class="fa-solid fa-circle"></i> Medium</span>
+                                    <span class="priority-count" id="count-medium">0</span>
+                                </div>
+                                <div class="progress-line"><div class="fill medium" id="bar-medium" style="width: 0%"></div></div>
+                            </div>
+                            <div class="priority-item">
+                                <div class="priority-header">
+                                    <span class="priority-label low"><i class="fa-solid fa-circle"></i> Low</span>
+                                    <span class="priority-count" id="count-low">0</span>
+                                </div>
+                                <div class="progress-line"><div class="fill low" id="bar-low" style="width: 0%"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Custom Toast Notifications Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Javascript Stack -->
+    <script src="js/api.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+/* -------------------------------------------------------------------
+   variables.css - Custom styling tokens and global variables
+   ------------------------------------------------------------------- */
+
+:root {
+    --bg-base: #0b0f17;
+    --bg-surface: rgba(22, 28, 45, 0.4);
+    --bg-surface-hover: rgba(22, 28, 45, 0.6);
+    --bg-sidebar: #0f1422;
+    --bg-modal: #131929;
+    
+    --border-color: rgba(255, 255, 255, 0.05);
+    --border-focus: rgba(99, 102, 241, 0.4);
+    
+    /* Text colors */
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    
+    /* Theme color accents (HSL) */
+    --color-primary: 99, 102, 241;    /* #6366f1 Indigo */
+    --color-success: 16, 185, 129;    /* #10b981 Emerald */
+    --color-warning: 245, 158, 11;    /* #f59e0b Amber */
+    --color-danger: 239, 68, 68;      /* #ef4444 Red */
+    --color-info: 59, 130, 246;       /* #3b82f6 Blue */
+
+    --font-primary: 'Outfit', sans-serif;
+    --font-heading: 'Plus Jakarta Sans', sans-serif;
+    
+    --shadow-sm: 0 2px 8px -2px rgba(0,0,0,0.5);
+    --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.6);
+    --shadow-lg: 0 20px 40px -10px rgba(0,0,0,0.8);
+    
+    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
