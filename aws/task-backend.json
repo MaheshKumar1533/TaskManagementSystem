@@ -6,10 +6,12 @@
   ],
   "cpu": "256",
   "memory": "512",
+  "executionRoleArn": "arn:aws:iam::437659978187:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::437659978187:role/ecsTaskExecutionRole",
   "containerDefinitions": [
     {
       "name": "backend",
-      "image": "BACKEND_IMAGE_PLACEHOLDER",
+      "image": "437659978187.dkr.ecr.us-east-1.amazonaws.com/tasksphere-backend:latest",
       "cpu": 256,
       "memory": 512,
       "portMappings": [
@@ -23,23 +25,23 @@
       "environment": [
         {
           "name": "DB_HOST",
-          "value": "DB_HOST_PLACEHOLDER"
+          "value": "tasksphere-db.cwbwkge4ighi.us-east-1.rds.amazonaws.com"
         },
         {
           "name": "DB_PORT",
-          "value": "DB_PORT_PLACEHOLDER"
+          "value": "5432"
         },
         {
           "name": "DB_NAME",
-          "value": "DB_NAME_PLACEHOLDER"
+          "value": "tasksphere"
         },
         {
           "name": "DB_USER",
-          "value": "DB_USER_PLACEHOLDER"
+          "value": "postgres"
         },
         {
           "name": "DB_PASSWORD",
-          "value": "DB_PASSWORD_PLACEHOLDER"
+          "value": "admin123"
         },
         {
           "name": "DEBUG",
@@ -47,14 +49,14 @@
         },
         {
           "name": "SECRET_KEY",
-          "value": "SECRET_KEY_PLACEHOLDER"
+          "value": "5+58%ykt+ic8$zbxmd7ip%t2h1jfhj%wcmwlhdzq^^6v_uawl-"
         }
       ],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
           "awslogs-group": "/ecs/tasksphere",
-          "awslogs-region": "AWS_REGION_PLACEHOLDER",
+          "awslogs-region": "us-east-1",
           "awslogs-stream-prefix": "backend"
         }
       }

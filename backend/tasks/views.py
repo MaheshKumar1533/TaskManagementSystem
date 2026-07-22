@@ -116,3 +116,6 @@ def task_stats(request):
         'by_priority': priority_dict,
     }
     return JsonResponse(data)
+
+def health_check(request):
+    return JsonResponse({'status': 'ok'})
