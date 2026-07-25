@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        AWS_CREDENTIALS_ID = 'aws-credentials' // Jenkins AWS credentials ID
+        AWS_CREDENTIALS_ID = 'aws-credentials'
     }
 
     stages {
@@ -15,12 +15,12 @@ pipeline {
         stage('Backend Tests') {
             steps {
                 echo 'Setting up Python environment and running Django tests...'
-                sh '''
-                    python3 -m venv venv
-                    . venv/bin/activate
-                    pip install -r backend/requirements.txt
-                    cd backend
-                    python manage.py test
+                bat '''
+                python -m venv venv
+                call venv\\Scripts\\activate
+                pip install -r backend\\requirements.txt
+                cd backend
+                python manage.py test
                 '''
             }
         }
@@ -28,10 +28,10 @@ pipeline {
         stage('Security Check') {
             steps {
                 echo 'Running dependency security scans...'
-                sh '''
-                    . venv/bin/activate
-                    pip install safety
-                    safety check || true
+                bat '''
+                call venv\\Scripts\\activate
+                pip install safety
+                safety check
                 '''
             }
         }
@@ -39,47 +39,27 @@ pipeline {
         stage('Docker Build') {
             steps {
                 echo 'Building Docker Images...'
-                sh '''
-                    # Load AWS details from central .env file
-                    if [ -f .env ]; then
-                        export $(grep -v '^#' .env | xargs)
-                    fi
-                    
-                    BACKEND_REPO="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/tasksphere-backend"
-                    FRONTEND_REPO="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/tasksphere-frontend"
-                    
-                    echo "Building Backend image for $BACKEND_REPO..."
-                    docker build -t $BACKEND_REPO:${BUILD_NUMBER} -t $BACKEND_REPO:latest ./backend
-                    
-                    echo "Building Frontend image for $FRONTEND_REPO..."
-                    docker build -t $FRONTEND_REPO:${BUILD_NUMBER} -t $FRONTEND_REPO:latest ./frontend
+                bat '''
+                docker build -t tasksphere-backend:%BUILD_NUMBER% -t tasksphere-backend:latest backend
+                docker build -t tasksphere-frontend:%BUILD_NUMBER% -t tasksphere-frontend:latest frontend
                 '''
             }
         }
 
         stage('Push to ECR') {
             steps {
-                echo 'Logging into Amazon ECR and pushing images...'
                 withCredentials([[
-                    $class: 'AmazonWebServicesCredentialsBinding', 
+                    $class: 'AmazonWebServicesCredentialsBinding',
                     credentialsId: "${AWS_CREDENTIALS_ID}"
                 ]]) {
-                    sh '''
-                        # Load AWS details from central .env file
-                        if [ -f .env ]; then
-                            export $(grep -v '^#' .env | xargs)
-                        fi
-                        
-                        BACKEND_REPO="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/tasksphere-backend"
-                        FRONTEND_REPO="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/tasksphere-frontend"
-                        
-                        aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
-                        
-                        docker push $BACKEND_REPO:${BUILD_NUMBER}
-                        docker push $BACKEND_REPO:latest
-                        
-                        docker push $FRONTEND_REPO:${BUILD_NUMBER}
-                        docker push $FRONTEND_REPO:latest
+                    bat '''
+                    aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin YOUR_ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com
+
+                    docker tag tasksphere-backend:latest YOUR_ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/tasksphere-backend:latest
+                    docker tag tasksphere-frontend:latest YOUR_ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/tasksphere-frontend:latest
+
+                    docker push YOUR_ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/tasksphere-backend:latest
+                    docker push YOUR_ACCOUNT_ID.dkr.ecr.ap-south-1.amazonaws.com/tasksphere-frontend:latest
                     '''
                 }
             }
@@ -87,12 +67,14 @@ pipeline {
 
         stage('Deploy to AWS') {
             steps {
-                echo 'Updating AWS ECS Task Definitions and triggering service redeployment...'
                 withCredentials([[
-                    $class: 'AmazonWebServicesCredentialsBinding', 
+                    $class: 'AmazonWebServicesCredentialsBinding',
                     credentialsId: "${AWS_CREDENTIALS_ID}"
                 ]]) {
-                    sh 'chmod +x ./aws/deploy.sh && ./aws/deploy.sh'
+                    bat '''
+                    aws ecs update-service --cluster tasksphere-cluster1 --service tasksphere-backend-service --force-new-deployment
+                    aws ecs update-service --cluster tasksphere-cluster1 --service tasksphere-frontend-service --force-new-deployment
+                    '''
                 }
             }
         }
@@ -104,10 +86,10 @@ pipeline {
             cleanWs()
         }
         success {
-            echo 'TaskSphere image compilation and AWS deploy triggered successfully!'
+            echo 'Deployment Successful!'
         }
         failure {
-            echo 'Pipeline failed. Please check build logs.'
+            echo 'Pipeline failed.'
         }
     }
 }
