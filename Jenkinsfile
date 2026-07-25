@@ -11,19 +11,20 @@ pipeline {
                 checkout scm
             }
         }
-
-        stage('Backend Tests') {
-            steps {
-                echo 'Setting up Python environment and running Django tests...'
-                bat '''
-                python -m venv venv
-                call venv\\Scripts\\activate
-                pip install -r backend\\requirements.txt
-                cd backend
-                python manage.py test
-                '''
-            }
-        }
+stage('Backend Tests') {
+    steps {
+        echo 'Setting up Python environment and running Django tests...'
+        bat '''
+        "C:\\Users\\HVIJA\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe" -m venv venv
+        call venv\\Scripts\\activate
+        python -m pip install --upgrade pip
+        python -m pip install -r backend\\requirements.txt
+        cd backend
+        python manage.py test
+        '''
+    }
+}
+        
 
         stage('Security Check') {
             steps {
