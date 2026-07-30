@@ -40,12 +40,12 @@ pipeline {
 }
         
         stage('Build') {
-   m    steps {
+       steps {
         echo 'Building application...'
     }
 }
 
-stage('Security Check') {
+    stage('Security Check') {
     steps {
         echo 'Running security checks...'
     }
