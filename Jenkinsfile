@@ -39,7 +39,37 @@ pipeline {
     }
 }
         
-        // Remaining stages...
+        stage('Build') {
+   m    steps {
+        echo 'Building application...'
+    }
+}
+
+stage('Security Check') {
+    steps {
+        echo 'Running security checks...'
+    }
+}
+
+stage('Docker Build') {
+    steps {
+        bat 'docker --version'
+        echo 'Docker build completed.'
+    }
+}
+
+stage('Push to ECR') {
+    steps {
+        echo 'Pushing image to AWS ECR...'
+    }
+}
+
+stage('Deploy to AWS') {
+    steps {
+        echo 'Deploying application to AWS...'
+    }
+}
+        
     }
 }
 
